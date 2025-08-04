@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Filas - Datacopy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            transition: all 0.3s ease;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .tab-button {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            font-weight: 700;
+        }
+        .hidden-tab {
+            display: none;
+        }
+        .ticket-animation {
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+        }
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            0% {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navegação por Abas -->
+    <header class="bg-white shadow-md p-4">
+        <nav class="container mx-auto flex justify-center space-x-2 sm:space-x-4">
+            <button id="tab-totem" class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-sm sm:text-base text-gray-600 hover:bg-gray-200">Totem</button>
+            <button id="tab-atendente" class="tab-button px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-sm sm:text-base text-gray-600 hover:bg-gray-200">Atendente</button>
+            <button id="tab-painel" class="tab-button active px-4 py-2 sm:px-6 sm:py-3 rounded-lg text-sm sm:text-base text-gray-600 hover:bg-gray-200">Painel de Senhas</button>
+        </nav>
+    </header>
+
+    <main class="flex-1 p-4 sm:p-8 container mx-auto">
+        
+        <!-- Conteúdo da Aba: Painel de Senhas (padrão) -->
+        <div id="content-painel" class="tab-content flex flex-col md:flex-row gap-8">
+            <div class="flex-1 p-8 bg-white shadow-xl rounded-2xl">
+                <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Painel de Senhas</h2>
+                <div class="flex-1 p-8 bg-blue-600 text-white rounded-xl shadow-lg flex flex-col items-center justify-center h-[400px]">
+                    <h1 class="text-3xl md:text-5xl font-bold mb-4">Senha Atual</h1>
+                    <div id="painel-ticket-number" class="text-9xl md:text-[10rem] font-extrabold text-blue-100 drop-shadow-lg text-center">-</div>
+                    <div id="painel-ticket-info" class="text-xl md:text-3xl font-medium mt-4 text-center">Aguardando próxima senha...</div>
+                </div>
+            </div>
+            
+            <div class="flex-1 p-6 bg-white rounded-xl shadow-inner flex flex-col">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">Últimas Chamadas</h2>
+                <div id="painel-recent-calls-list" class="flex flex-col gap-3 h-96 overflow-y-auto p-2">
+                    <!-- Chamadas recentes do painel -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo da Aba: Totem -->
+        <div id="content-totem" class="tab-content hidden-tab p-8 bg-white shadow-xl rounded-2xl flex flex-col items-center">
+            <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Totem de Atendimento</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="generate-ticket-btn px-8 py-4 bg-green-500 text-white font-bold text-xl rounded-full shadow-lg hover:bg-green-600 transition-colors duration-300 transform hover:scale-105" data-servico="Atendimento Geral">Atendimento Geral</button>
+                <button class="generate-ticket-btn px-8 py-4 bg-yellow-500 text-white font-bold text-xl rounded-full shadow-lg hover:bg-yellow-600 transition-colors duration-300 transform hover:scale-105" data-servico="Atendimento Prioritário">Atendimento Prioritário</button>
+            </div>
+        </div>
+
+        <!-- Conteúdo da Aba: Atendente -->
+        <div id="content-atendente" class="tab-content hidden-tab p-8 bg-white shadow-xl rounded-2xl">
+            <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Painel do Atendente</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Painel do Atendente 1 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-4 text-gray-700">Guichê 1</h3>
+                    <div class="flex flex-col items-center">
+                        <div id="atendente-ticket-1" class="text-5xl font-extrabold text-blue-600 mb-4">-</div>
+                        <div id="atendente-info-1" class="text-lg text-center text-gray-600">Aguardando...</div>
+                        <button class="call-next-btn px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow-md hover:bg-blue-600 transition-colors duration-300 mt-4" data-guiche="1">Chamar Próxima</button>
+                    </div>
+                </div>
+                <!-- Painel do Atendente 2 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-4 text-gray-700">Guichê 2</h3>
+                    <div class="flex flex-col items-center">
+                        <div id="atendente-ticket-2" class="text-5xl font-extrabold text-blue-600 mb-4">-</div>
+                        <div id="atendente-info-2" class="text-lg text-center text-gray-600">Aguardando...</div>
+                        <button class="call-next-btn px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow-md hover:bg-blue-600 transition-colors duration-300 mt-4" data-guiche="2">Chamar Próxima</button>
+                    </div>
+                </div>
+                <!-- Painel do Atendente 3 -->
+                <div class="bg-gray-100 p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-4 text-gray-700">Guichê 3</h3>
+                    <div class="flex flex-col items-center">
+                        <div id="atendente-ticket-3" class="text-5xl font-extrabold text-blue-600 mb-4">-</div>
+                        <div id="atendente-info-3" class="text-lg text-center text-gray-600">Aguardando...</div>
+                        <button class="call-next-btn px-6 py-2 bg-blue-500 text-white font-bold rounded-full shadow-md hover:bg-blue-600 transition-colors duration-300 mt-4" data-guiche="3">Chamar Próxima</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 p-6 bg-gray-100 rounded-xl shadow-inner">
+                <h3 class="text-2xl font-bold mb-4 text-center text-gray-800">Fila de Espera</h3>
+                <div id="fila-espera-list" class="flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto p-2">
+                    <!-- Senhas em espera -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Script de Lógica da Interface -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referências de UI
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Variável de estado global (simulada)
+            let queueState = {
+                fila_espera: [],
+                senhas_chamadas: [],
+                senha_atual: null,
+                guiches: {
+                    '1': { senha_atual: null, info: 'Aguardando...' },
+                    '2': { senha_atual: null, info: 'Aguardando...' },
+                    '3': { senha_atual: null, info: 'Aguardando...' }
+                }
+            };
+
+            // Função para alternar as abas
+            const showTab = (tabId) => {
+                tabContents.forEach(content => {
+                    if (content.id === `content-${tabId}`) {
+                        content.classList.remove('hidden-tab');
+                    } else {
+                        content.classList.add('hidden-tab');
+                    }
+                });
+                tabButtons.forEach(button => {
+                    if (button.id === `tab-${tabId}`) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+            };
+
+            // Configurar botões de abas
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.id.replace('tab-', '');
+                    showTab(tabId);
+                });
+            });
+
+            // Função para renderizar o painel de senhas
+            const renderPainel = () => {
+                const painelTicketNumber = document.getElementById('painel-ticket-number');
+                const painelTicketInfo = document.getElementById('painel-ticket-info');
+                const painelRecentCallsList = document.getElementById('painel-recent-calls-list');
+                const painelTicketDisplay = document.getElementById('content-painel').querySelector('.bg-blue-600');
+
+                if (queueState.senha_atual) {
+                    if (painelTicketNumber.textContent !== queueState.senha_atual.numero) {
+                        painelTicketNumber.textContent = queueState.senha_atual.numero;
+                        painelTicketNumber.classList.add('ticket-animation');
+                        setTimeout(() => painelTicketNumber.classList.remove('ticket-animation'), 500);
+                    }
+                    painelTicketInfo.textContent = `Guichê ${queueState.senha_atual.guiche} | ${queueState.senha_atual.servico}`;
+                    painelTicketDisplay.classList.remove('scale-95', 'opacity-0');
+                    painelTicketDisplay.classList.add('scale-100', 'opacity-100');
+                } else {
+                    painelTicketNumber.textContent = '-';
+                    painelTicketInfo.textContent = 'Aguardando próxima senha...';
+                    painelTicketDisplay.classList.remove('scale-100', 'opacity-100');
+                    painelTicketDisplay.classList.add('scale-95', 'opacity-0');
+                }
+
+                painelRecentCallsList.innerHTML = '';
+                if (queueState.senhas_chamadas.length > 0) {
+                    queueState.senhas_chamadas.forEach(call => {
+                        const callElement = document.createElement('div');
+                        callElement.className = 'flex justify-between items-center bg-gray-200 p-4 rounded-xl shadow-md fade-in-up';
+                        callElement.innerHTML = `<span class="text-xl font-semibold">${call.numero}</span><span class="text-lg text-gray-600">Guichê ${call.guiche}</span>`;
+                        painelRecentCallsList.appendChild(callElement);
+                    });
+                } else {
+                    painelRecentCallsList.innerHTML = '<div class="text-center text-gray-500 font-light mt-4">Nenhuma senha chamada ainda.</div>';
+                }
+            };
+
+            // Função para renderizar a interface do atendente
+            const renderAtendente = () => {
+                const filaEsperaList = document.getElementById('fila-espera-list');
+                filaEsperaList.innerHTML = '';
+                if (queueState.fila_espera.length > 0) {
+                    queueState.fila_espera.forEach(senha => {
+                        const senhaElement = document.createElement('div');
+                        senhaElement.className = 'bg-blue-500 text-white font-bold py-2 px-4 rounded-full text-sm';
+                        senhaElement.textContent = senha.numero;
+                        filaEsperaList.appendChild(senhaElement);
+                    });
+                } else {
+                    filaEsperaList.innerHTML = '<div class="text-center text-gray-500 font-light mt-4 w-full">Nenhuma senha na fila.</div>';
+                }
+
+                for (const guiche in queueState.guiches) {
+                    const atendenteTicket = document.getElementById(`atendente-ticket-${guiche}`);
+                    const atendenteInfo = document.getElementById(`atendente-info-${guiche}`);
+                    const guicheState = queueState.guiches[guiche];
+                    if (guicheState.senha_atual) {
+                        atendenteTicket.textContent = guicheState.senha_atual.numero;
+                        atendenteInfo.textContent = `${guicheState.senha_atual.servico}`;
+                    } else {
+                        atendenteTicket.textContent = '-';
+                        atendenteInfo.textContent = 'Aguardando...';
+                    }
+                }
+            };
+
+            // Função principal de atualização de toda a interface
+            const updateUI = () => {
+                renderPainel();
+                renderAtendente();
+            };
+
+            // Simulação de lógica de negócio e API (em vez de usar fetch)
+            let nextTicketNumber = 1;
+            const generateNewTicket = (servico) => {
+                const prefixo = servico.charAt(0);
+                const numero = `${prefixo}-${String(nextTicketNumber).padStart(3, '0')}`;
+                nextTicketNumber++;
+                const newTicket = { numero, servico };
+                queueState.fila_espera.push(newTicket);
+                updateUI();
+                return newTicket;
+            };
+
+            const callNextTicket = (guiche) => {
+                if (queueState.fila_espera.length > 0) {
+                    const nextTicket = queueState.fila_espera.shift();
+                    
+                    // Se já houver uma senha no guichê, move-a para chamadas recentes
+                    if (queueState.guiches[guiche].senha_atual) {
+                         queueState.senhas_chamadas.unshift(queueState.guiches[guiche].senha_atual);
+                    }
+                    
+                    // Define a nova senha no guichê
+                    queueState.guiches[guiche].senha_atual = { ...nextTicket, guiche };
+                    
+                    // Define a senha principal do painel para a última chamada
+                    queueState.senha_atual = queueState.guiches[guiche].senha_atual;
+
+                    // Limita o número de chamadas recentes
+                    if (queueState.senhas_chamadas.length > 5) {
+                        queueState.senhas_chamadas.pop();
+                    }
+                    
+                    updateUI();
+                }
+            };
+
+            // Event Listeners para botões
+            document.querySelectorAll('.generate-ticket-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const servico = event.target.getAttribute('data-servico');
+                    generateNewTicket(servico);
+                });
+            });
+
+            document.querySelectorAll('.call-next-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const guiche = event.target.getAttribute('data-guiche');
+                    callNextTicket(guiche);
+                });
+            });
+
+            // Inicializa a interface
+            updateUI();
+            showTab('painel'); // Começa com a aba Painel ativa
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "sistema-fila-completo-heroku",
+  "version": "1.0.0",
+  "description": "Deploy do frontend e backend juntos no Heroku",
+  "scripts": {
+    "postinstall": "cd frontend && npm install && npm run build"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

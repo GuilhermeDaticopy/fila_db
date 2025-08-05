@@ -1,11 +1,12 @@
 {
   "name": "sistema-fila-completo-heroku",
   "version": "1.0.0",
-  "description": "Deploy do frontend e backend juntos no Heroku",
+  "description": "Deploy do frontend e backend juntos no Render",
   "scripts": {
-    "postinstall": "cd frontend && npm install && npm run build"
+    // O script "postinstall" foi REMOVIDO daqui.
+    // A lógica de build do frontend será movida para o "Build Command" no Render.
   },
   "engines": {
-    "node": "20.x" 
+    "node": "20.x"
   }
 }
